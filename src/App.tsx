@@ -30,10 +30,11 @@ ChartJS.register(
 
 function App() {
   const [cryptos, setCryptos] = useState<Crypto[] | null>(null);
-  const [selected, setSelected] = useState<Crypto | null>();
+  const [selected, setSelected] = useState<Crypto[]>([]);
 
   const [range, setRange] = useState<number>(30);
 
+  /*
   //chartjs
   const [data, setData] = useState<ChartData<"line">>();
   const [options, setOptions] = useState<ChartOptions<"line">>({
@@ -48,6 +49,7 @@ function App() {
       },
     },
   });
+  */
 
   useEffect(() => {
     const url =
@@ -58,6 +60,8 @@ function App() {
       setCryptos(res.data);
     });
   }, []);
+
+  /*
 
   useEffect(() => {
     if (!selected) return;
@@ -108,13 +112,14 @@ function App() {
       });
     });
   }, [selected, range]);
+  */
 
   return (
     <>
       <select
         onChange={(e) => {
-          const c = cryptos?.find((x) => x.id === e.target.value);
-          setSelected(c);
+          const c = cryptos?.find((x) => x.id === e.target.value) as Crypto;
+          setSelected([...selected, c]);
         }}
         defaultValue="default"
       >
@@ -129,7 +134,7 @@ function App() {
           : null}
         <option value="default">Choose an option</option>
       </select>
-      <select
+      {/* <select
         onChange={(e) => {
           setRange(parseInt(e.target.value));
         }}
@@ -137,13 +142,18 @@ function App() {
         <option value={30}>30days</option>
         <option value={7}>7days</option>
         <option value={1}>1day</option>
-      </select>
-      {selected ? <CryptoSummary crypto={selected} /> : null}
-      {data ? (
+      </select> */}
+
+      {selected.map((s) => {
+        return <CryptoSummary crypto={s} />;
+      })}
+
+      {/* {selected ? <CryptoSummary crypto={selected} /> : null} */}
+      {/* {data ? (
         <div style={{ width: 600 }}>
           <Line options={options} data={data} />
         </div>
-      ) : null}
+      ) : null} */}
     </>
   );
 }
