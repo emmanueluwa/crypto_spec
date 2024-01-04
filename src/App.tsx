@@ -114,6 +114,22 @@ function App() {
   }, [selected, range]);
   */
 
+  useEffect(() => {
+    console.log("SELECTED: ", selected);
+  }, [selected]);
+
+  function updateOwned(crypto: Crypto, amount: number): void {
+    console.log("selected", selected);
+    console.log("KEEEP GOING, updateOwned", crypto, amount);
+    let temp = [...selected];
+    //get the amounts owned of each selcted crypto currency
+    let tempObject = temp.find((c) => c.id === crypto.id);
+    if (tempObject) {
+      tempObject.owned = amount;
+      setSelected(temp);
+    }
+  }
+
   return (
     <>
       <select
@@ -145,7 +161,7 @@ function App() {
       </select> */}
 
       {selected.map((s) => {
-        return <CryptoSummary crypto={s} />;
+        return <CryptoSummary updateOwned={updateOwned} crypto={s} />;
       })}
 
       {/* {selected ? <CryptoSummary crypto={selected} /> : null} */}
@@ -154,6 +170,28 @@ function App() {
           <Line options={options} data={data} />
         </div>
       ) : null} */}
+
+      {/* AGGREGATING TOTAL VALUE OF OWNED COINS  */}
+      {selected
+        ? "Your portfolio is worth: $" +
+          selected
+            .map((selectedCoin) => {
+              if (isNaN(selectedCoin.owned)) {
+                return 0;
+              }
+
+              return selectedCoin.current_price * selectedCoin.owned;
+            })
+            .reduce((prev, current) => {
+              // add up value and return it, next iteration is asigned to previous
+              console.log("prev + current", prev, current);
+              return prev + current;
+            }, 0)
+            .toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+        : null}
     </>
   );
 }
