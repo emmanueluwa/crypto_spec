@@ -10,7 +10,7 @@ export default function CrptoSummary({
   crypto,
   updateOwned,
 }: AppProps): JSX.Element {
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(NaN);
 
   useEffect(() => {
     console.log(crypto.name, amount, crypto.current_price * amount);

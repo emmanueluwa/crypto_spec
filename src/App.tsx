@@ -12,8 +12,9 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 // import faker from "faker";
 import type { ChartData, ChartOptions } from "chart.js";
 import moment from "moment";
@@ -25,7 +26,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 function App() {
@@ -35,7 +37,7 @@ function App() {
   const [range, setRange] = useState<number>(30);
 
   /*
-  //chartjs
+  //chartjs, line chart
   const [data, setData] = useState<ChartData<"line">>();
   const [options, setOptions] = useState<ChartOptions<"line">>({
     responsive: true,
@@ -50,6 +52,9 @@ function App() {
     },
   });
   */
+
+  //piechart
+  const [data, setData] = useState<ChartData<"pie">>();
 
   useEffect(() => {
     const url =
@@ -116,6 +121,36 @@ function App() {
 
   useEffect(() => {
     console.log("SELECTED: ", selected);
+    //avoid setting the pie chart before data is selected
+    if (selected.length === 0) return;
+    setData({
+      labels: selected.map((selectedCoin) => selectedCoin.name),
+      datasets: [
+        {
+          label: "# of Votes",
+          data: selected.map(
+            (selectedCoin) => selectedCoin.owned * selectedCoin.current_price
+          ),
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 159, 64, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
   }, [selected]);
 
   function updateOwned(crypto: Crypto, amount: number): void {
@@ -164,12 +199,21 @@ function App() {
         return <CryptoSummary updateOwned={updateOwned} crypto={s} />;
       })}
 
+      {/* LINE CHART */}
       {/* {selected ? <CryptoSummary crypto={selected} /> : null} */}
       {/* {data ? (
         <div style={{ width: 600 }}>
           <Line options={options} data={data} />
         </div>
       ) : null} */}
+
+      {/* PIE CHART  */}
+      {/* {selected ? <CryptoSummary crypto={selected} /> : null} */}
+      {data ? (
+        <div style={{ width: 600 }}>
+          <Pie data={data} />
+        </div>
+      ) : null}
 
       {/* AGGREGATING TOTAL VALUE OF OWNED COINS  */}
       {selected
